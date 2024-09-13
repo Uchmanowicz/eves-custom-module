@@ -134,12 +134,12 @@ namespace eves
         return msgId & 0x00FF;
     }
 
-    std::uint16_t decodeCellVoltage(std::uint8_t MSB, std::uint8_t LSB)
+    std::uint16_t decodeCellVoltage_mV(std::uint8_t MSB, std::uint8_t LSB)
     {
         return MSB + (LSB & 0x3F) * 256;
     }
 
-    std::uint8_t decodeTemperature(std::uint8_t data)
+    std::int16_t decodeTemperature(std::uint8_t data)
     {
         return data - 40;
     }
