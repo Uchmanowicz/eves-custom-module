@@ -55,7 +55,7 @@ namespace eves
 
     void createMsgBalancingState(std::uint8_t moduleId, std::uint32_t balanceState, std::uint32_t &msgId, std::uint8_t buf[8])
     {
-        msgId = createMsgId(moduleId, 0x01);
+        msgId = createMsgId(moduleId + 1, 0x01);
         buf[0] = 0xFF;
         buf[1] = 0xFF;
         buf[2] = (balanceState >> 24) & 0xFF;
@@ -89,7 +89,7 @@ namespace eves
     // Group from 0 to 7;
     void createMsgCellVoltGroup(std::uint8_t moduleId, std::uint8_t group, std::uint16_t cell1, std::uint16_t cell2, std::uint16_t cell3, std::uint32_t &msgId, std::uint8_t buf[8])
     {
-        msgId = createMsgId(moduleId, 0x02 + group);
+        msgId = createMsgId(moduleId + 1, 0x02 + group);
         buf[0] = encodeMsbCellVolt(cell1);
         buf[1] = encodeLsbCellVolt(cell1);
 
@@ -110,7 +110,7 @@ namespace eves
                                    std::int16_t t4, std::int16_t t5, std::int16_t t6,
                                    std::uint32_t &msgId, std::uint8_t buf[8])
     {
-        msgId = createMsgId(moduleId, 0x0F - group);
+        msgId = createMsgId(moduleId + 1, 0x0F + 0x02 - group);
         buf[0] = encodeTemperature(t1);
         buf[1] = encodeTemperature(t2);
         buf[2] = encodeTemperature(t3);
