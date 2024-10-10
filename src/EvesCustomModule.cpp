@@ -44,7 +44,7 @@ namespace eves
 
     bool isCrcValid(const std::uint8_t *receivedBuf, std::uint8_t receivedLen)
     {
-        return isCrcValid(receivedBuf, receivedLen, receivedBuf[receivedLen - 1 - 1], receivedBuf[receivedLen - 1]);
+        return isCrcValid(receivedBuf, receivedLen - 2, receivedBuf[receivedLen - 1 - 1], receivedBuf[receivedLen - 1]);
     }
 
     // Encoding
