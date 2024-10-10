@@ -110,7 +110,7 @@ namespace eves
                                    std::int16_t t4, std::int16_t t5, std::int16_t t6,
                                    std::uint32_t &msgId, std::uint8_t buf[8])
     {
-        msgId = createMsgId(moduleId + 1, 0x0F + 0x02 - group);
+        msgId = createMsgId(moduleId + 1, 0x0F - group);
         buf[0] = encodeTemperature(t1);
         buf[1] = encodeTemperature(t2);
         buf[2] = encodeTemperature(t3);
