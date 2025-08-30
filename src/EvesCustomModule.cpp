@@ -78,6 +78,16 @@ namespace eves
         return (cellVolt_mV >> 8) & 0x3F;
     }
 
+    std::uint8_t encodeMsbCellId(std::uint16_t cellId)
+    {
+        return (cellId & 0xFF00) >> 8;
+    }
+
+    std::uint8_t encodeLsbCellId(std::uint16_t cellId)
+    {
+        return cellId & 0xFF;
+    }
+
     std::uint8_t encodeTemperature(std::int16_t temperature)
     {
         temperature += 40;
@@ -86,10 +96,13 @@ namespace eves
         return static_cast<std::uint8_t>(temperature);
     }
 
-    // Group from 0 to 7;
+    // Group from 0 to 165;
     void createMsgCellVoltGroup(std::uint8_t moduleId, std::uint8_t group, std::uint16_t cell1, std::uint16_t cell2, std::uint16_t cell3, std::uint32_t &msgId, std::uint8_t buf[8])
     {
-        msgId = createMsgId(moduleId + 1, 0x02 + group);
+        std::uint8_t targetGroup = 0x02 + (group % 12);
+        std::uint8_t targetFrameGroup = ((std::uint8_t)(group / 12)) << 4;
+
+        msgId = createMsgId(moduleId + 1, targetFrameGroup + targetGroup);
         buf[0] = encodeMsbCellVolt(cell1);
         buf[1] = encodeLsbCellVolt(cell1);
 
@@ -123,6 +136,57 @@ namespace eves
         buf[7] = crc & 0xFF;
     }
 
+    void createMsgPackData1(std::uint16_t packVolt, std::uint16_t highCellVolt, std::uint16_t lowCellVolt, std::uint32_t &msgId, std::uint8_t buf[8])
+    {
+        msgId = 0x8000;
+        buf[0] = (packVolt & 0xFF00) >> 8;
+        buf[1] = packVolt & 0xFF;
+
+        buf[2] = encodeMsbCellVolt(highCellVolt);
+        buf[3] = encodeLsbCellVolt(highCellVolt);
+
+        buf[4] = encodeMsbCellVolt(lowCellVolt);
+        buf[5] = encodeLsbCellVolt(lowCellVolt);
+
+        const auto crc = calculateCrc16(buf, 6);
+        buf[6] = (crc & 0xFF00) >> 8;
+        buf[7] = crc & 0xFF;
+    }
+
+    void createMsgPackData2(std::uint16_t avgCellVolt, std::uint16_t highCellVoltId, std::uint16_t lowCellVoltId, std::uint32_t &msgId, std::uint8_t buf[8])
+    {
+
+        msgId = 0x8010;
+        buf[0] = encodeMsbCellVolt(avgCellVolt);
+        buf[1] = encodeLsbCellVolt(avgCellVolt);
+
+        buf[2] = encodeMsbCellId(highCellVoltId);
+        buf[3] = encodeLsbCellId(highCellVoltId);
+
+        buf[4] = encodeMsbCellId(lowCellVoltId);
+        buf[5] = encodeLsbCellId(lowCellVoltId);
+
+        const auto crc = calculateCrc16(buf, 6);
+        buf[6] = (crc & 0xFF00) >> 8;
+        buf[7] = crc & 0xFF;
+    }
+
+    void createMsgPackData3(std::uint8_t highTemp, std::uint8_t lowTemp, std::uint8_t avgTemp, std::uint32_t &msgId, std::uint8_t buf[8])
+    {
+        msgId = 0x8020;
+        buf[0] = encodeTemperature(highTemp);
+        buf[1] = encodeTemperature(lowTemp);
+        buf[2] = encodeTemperature(avgTemp);
+
+        buf[3] = 0xFF;
+        buf[4] = 0xFF;
+        buf[5] = 0xFF;
+
+        const auto crc = calculateCrc16(buf, 6);
+        buf[6] = (crc & 0xFF00) >> 8;
+        buf[7] = crc & 0xFF;
+    }
+
     // Decoding
     std::uint8_t decodeModuleId(std::uint32_t msgId)
     {
@@ -137,6 +201,16 @@ namespace eves
     std::uint16_t decodeCellVoltage_mV(std::uint8_t MSB, std::uint8_t LSB)
     {
         return MSB + (LSB & 0x3F) * 256;
+    }
+
+    std::uint16_t decodePackVoltage_dV(std::uint8_t MSB, std::uint8_t LSB)
+    {
+        return (MSB << 8) + LSB;
+    }
+
+    std::uint16_t decodeCellId(std::uint8_t MSB, std::uint8_t LSB)
+    {
+        return (MSB << 8) + LSB;
     }
 
     std::int16_t decodeTemperature(std::uint8_t data)
