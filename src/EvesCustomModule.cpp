@@ -171,7 +171,7 @@ namespace eves
         buf[7] = crc & 0xFF;
     }
 
-    void createMsgPackData3(std::uint8_t highTemp, std::uint8_t lowTemp, std::uint8_t avgTemp, std::uint32_t &msgId, std::uint8_t buf[8])
+    void createMsgPackData3(std::int16_t highTemp, std::int16_t lowTemp, std::int16_t avgTemp, std::uint32_t &msgId, std::uint8_t buf[8])
     {
         msgId = 0x8020;
         buf[0] = encodeTemperature(highTemp);

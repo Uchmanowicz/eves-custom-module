@@ -30,7 +30,7 @@ namespace eves
 
     void createMsgPackData1(std::uint16_t packVolt, std::uint16_t highCellVolt, std::uint16_t lowCellVolt, std::uint32_t &msgId, std::uint8_t buf[8]);
     void createMsgPackData2(std::uint16_t avgCellVolt, std::uint16_t highCellVoltId, std::uint16_t lowCellVoltId, std::uint32_t &msgId, std::uint8_t buf[8]);
-    void createMsgPackData3(std::uint8_t highTemp, std::uint8_t lowTemp, std::uint8_t avgTemp, std::uint32_t &msgId, std::uint8_t buf[8]);
+    void createMsgPackData3(std::int16_t highTemp, std::int16_t lowTemp, std::int16_t avgTemp, std::uint32_t &msgId, std::uint8_t buf[8]);
 
     // Decoding
     std::uint8_t decodeModuleId(std::uint32_t msgId);
