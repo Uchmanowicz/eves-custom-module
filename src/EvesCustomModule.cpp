@@ -97,10 +97,10 @@ namespace eves
     }
 
     // Group from 0 to 165;
-    void createMsgCellVoltGroup(std::uint8_t moduleId, std::uint8_t group, std::uint16_t cell1, std::uint16_t cell2, std::uint16_t cell3, std::uint32_t &msgId, std::uint8_t buf[8])
+    void createMsgCellVoltGroup(std::uint8_t moduleId, std::uint8_t packIdx, std::uint16_t cell1, std::uint16_t cell2, std::uint16_t cell3, std::uint32_t &msgId, std::uint8_t buf[8])
     {
-        std::uint8_t targetGroup = 0x02 + (group % 12);
-        std::uint8_t targetFrameGroup = ((std::uint8_t)(group / 12)) << 4;
+        std::uint8_t targetGroup = 0x02 + (packIdx % maxCellsMsgTypesPerGroup);
+        std::uint8_t targetFrameGroup = ((std::uint8_t)(packIdx / maxCellsMsgTypesPerGroup)) << 4;
 
         msgId = createMsgId(moduleId + 1, targetFrameGroup + targetGroup);
         buf[0] = encodeMsbCellVolt(cell1);
@@ -118,12 +118,12 @@ namespace eves
     }
 
     // Group from 0 to 2;
-    void createMsgTemperatureGroup(std::uint8_t moduleId, std::uint8_t group,
+    void createMsgTemperatureGroup(std::uint8_t moduleId, std::uint8_t packIdx,
                                    std::int16_t t1, std::int16_t t2, std::int16_t t3,
                                    std::int16_t t4, std::int16_t t5, std::int16_t t6,
                                    std::uint32_t &msgId, std::uint8_t buf[8])
     {
-        msgId = createMsgId(moduleId + 1, 0x0F - group);
+        msgId = createMsgId(moduleId + 1, 0x0F - packIdx);
         buf[0] = encodeTemperature(t1);
         buf[1] = encodeTemperature(t2);
         buf[2] = encodeTemperature(t3);

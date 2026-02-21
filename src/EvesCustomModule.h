@@ -4,6 +4,8 @@
 
 namespace eves
 {
+    const std::uint8_t maxCellsMsgTypesPerGroup = 11;
+
     // CRC-16-CCITT
     std::uint16_t calculateCrc16(const std::uint8_t *buf, std::uint8_t len);
     bool isCrcValid(const std::uint8_t *receivedBuf, std::uint8_t receivedLen, std::uint16_t targetCrc);
@@ -19,11 +21,11 @@ namespace eves
     std::uint8_t encodeLsbCellId(std::uint16_t cellId);
     std::uint8_t encodeTemperature(std::int16_t temperature);
 
-    // Group from 0 to 165;
-    void createMsgCellVoltGroup(std::uint8_t moduleId, std::uint8_t group, std::uint16_t cell1, std::uint16_t cell2, std::uint16_t cell3, std::uint32_t &msgId, std::uint8_t buf[8]);
+    // packIdx from 0 to 165;
+    void createMsgCellVoltGroup(std::uint8_t moduleId, std::uint8_t packIdx, std::uint16_t cell1, std::uint16_t cell2, std::uint16_t cell3, std::uint32_t &msgId, std::uint8_t buf[8]);
 
-    // Group from 0 to 2;
-    void createMsgTemperatureGroup(std::uint8_t moduleId, std::uint8_t group,
+    // packIdx from 0 to 2;
+    void createMsgTemperatureGroup(std::uint8_t moduleId, std::uint8_t packIdx,
                                    std::int16_t t1, std::int16_t t2, std::int16_t t3,
                                    std::int16_t t4, std::int16_t t5, std::int16_t t6,
                                    std::uint32_t &msgId, std::uint8_t buf[8]);
