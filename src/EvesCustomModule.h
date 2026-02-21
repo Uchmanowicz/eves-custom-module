@@ -4,8 +4,6 @@
 
 namespace eves
 {
-    const std::uint8_t maxCellsMsgTypesPerGroup = 11;
-
     // CRC-16-CCITT
     std::uint16_t calculateCrc16(const std::uint8_t *buf, std::uint8_t len);
     bool isCrcValid(const std::uint8_t *receivedBuf, std::uint8_t receivedLen, std::uint16_t targetCrc);
@@ -37,7 +35,17 @@ namespace eves
     // Decoding
     std::uint8_t decodeModuleId(std::uint32_t msgId);
     std::uint8_t decodeMsgType(std::uint32_t msgId);
+
+    struct DecodedCellData
+    {
+        std::uint16_t id;
+        std::uint16_t value_mV;
+    };
+
+    // cellPackIdx from 0 to 2
+    std::pair<bool, DecodedCellData> decodeCellIdxAndVoltage_mV(std::uint32_t msgId, std::uint8_t cellPackIdx, std::uint8_t MSB, std::uint8_t LSB);
     std::uint16_t decodeCellVoltage_mV(std::uint8_t MSB, std::uint8_t LSB);
+
     std::uint16_t decodePackVoltage_dV(std::uint8_t MSB, std::uint8_t LSB);
     std::uint16_t decodeCellId(std::uint8_t MSB, std::uint8_t LSB);
     std::int16_t decodeTemperature(std::uint8_t data);

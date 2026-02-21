@@ -5,6 +5,9 @@
 
 namespace eves
 {
+    static const std::uint8_t maxCellsMsgTypesPerGroup = 11; // is from 0x6102 to 0x610C
+    static const std::uint8_t cellsPerPack = 3;
+
     // CRC-16-CCITT
     std::uint16_t calculateCrc16(const std::uint8_t *buf, std::uint8_t len)
     {
@@ -196,6 +199,30 @@ namespace eves
     std::uint8_t decodeMsgType(std::uint32_t msgId)
     {
         return msgId & 0x00FF;
+    }
+
+    std::pair<bool, DecodedCellData> decodeCellIdxAndVoltage_mV(std::uint32_t msgId, std::uint8_t cellPackIdx, std::uint8_t MSB, std::uint8_t LSB)
+    {
+        if (!(msgId > 0x6100 && msgId <= 0x7000))
+            return {false, {}};
+
+        const std::uint8_t beginOffset = 0x02;
+        const auto msgType = decodeMsgType(msgId);
+        const auto msgTypeLsb = msgType & 0x0F;
+
+        if (!(msgTypeLsb >= beginOffset && msgTypeLsb < (eves::maxCellsMsgTypesPerGroup + beginOffset)))
+            return {false, {}};
+
+        const std::uint8_t cellsMsgType = (msgTypeLsb - beginOffset);
+
+        const std::uint8_t groupIdx = (((msgType & 0xF0) >> 4) * eves::maxCellsMsgTypesPerGroup);
+        const std::uint8_t cellsGroupIdx = groupIdx + cellsMsgType;
+
+        DecodedCellData data;
+        data.id = (cellsGroupIdx * cellsPerPack) + cellPackIdx;
+        data.value_mV = decodeCellVoltage_mV(MSB, LSB);
+
+        return {true, data};
     }
 
     std::uint16_t decodeCellVoltage_mV(std::uint8_t MSB, std::uint8_t LSB)
